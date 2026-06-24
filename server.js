@@ -23,7 +23,7 @@ if (err) {
 console.error("❌ DB failed:", err);
 return;
 }
-  
+
 console.log("✅ Connected to DB");
 
 db.query(`
@@ -35,7 +35,7 @@ db.query(`
      created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
    )
  `);
-  
+
  db.query(`
    CREATE TABLE IF NOT EXISTS users (
      id INT AUTO_INCREMENT PRIMARY KEY,
@@ -61,12 +61,12 @@ const header = req.headers["authorization"];
  if (!header) {
 return res.status(403).json({ error: "No token" });
 }
-  
+
 const token = header.split(" ")[1];
-  
+
 jwt.verify(token, "secretkey", (err, user) => {
 if (err) return res.status(403).json({ error: "Invalid token" });
-	
+
 	  req.user = user;
 next();
 });
@@ -78,13 +78,13 @@ app.post("/register", async (req, res) => {
 const { username, password, role } = req.body;
 
 const hash = await bcrypt.hash(password, 10);
-  
+
 db.query(
 "INSERT INTO users (username, password, role) VALUES (?, ?, ?)",
 [username, hash, role],
 (err) => {
 if (err) return res.status(500).json({ error: err.message });
-	  
+
 	    res.json({ message: "✅ User created" });
 }
 );
@@ -104,9 +104,9 @@ return res.status(401).json({ error: "User not found" });
 }
 
 const user = results[0];
-	  
+
 	    const valid = await bcrypt.compare(password, user.password);	
-		
+
   if (!valid) {
         return res.status(401).json({ error: "Invalid password" });
       }
@@ -146,11 +146,10 @@ app.get("/iccids", verifyToken, (req, res) => {
   });
 });
 
-
 // 🔄 MOVE STOCK
 app.put("/move", verifyToken, (req, res) => {
   const { iccid, newLocation } = req.body;
-  
+
 db.query(
 "UPDATE iccids SET location = ? WHERE iccid = ?",
 [newLocation, iccid],
